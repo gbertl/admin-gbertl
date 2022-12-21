@@ -11,16 +11,21 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import axios from '../axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { AxiosError, AxiosResponse } from 'axios';
+
+import axios from '../axios';
 import { Work } from '../typings';
+import { useAuth0 } from '@auth0/auth0-react';
+import * as api from '../api';
 
 interface Props {
   setWorkId: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 const WorksTable = ({ setWorkId }: Props) => {
+  const { getAccessTokenSilently } = useAuth0();
+
   const queryClient = useQueryClient();
 
   const { data: works } = useQuery<AxiosResponse, AxiosError, Work[]>(
@@ -33,7 +38,9 @@ const WorksTable = ({ setWorkId }: Props) => {
 
   const { mutate: deleteWork } = useMutation<AxiosResponse, AxiosError, string>(
     async (workId) => {
-      return axios.delete(`/works/${workId}`);
+      const token = await getAccessTokenSilently();
+
+      return api.deleteWork(workId, token);
     },
     {
       onSuccess: () => {
@@ -41,10 +48,6 @@ const WorksTable = ({ setWorkId }: Props) => {
       },
     }
   );
-
-  const handleDelete = (id: string) => {
-    deleteWork(id);
-  };
 
   return (
     <Container sx={{ mt: 8 }}>
@@ -86,7 +89,7 @@ const WorksTable = ({ setWorkId }: Props) => {
                     </Button>
                     <Button
                       variant="contained"
-                      onClick={() => handleDelete(work._id)}
+                      onClick={() => deleteWork(work._id)}
                     >
                       Delete
                     </Button>

@@ -7,6 +7,8 @@ import placeholder from '../assets/images/placeholder.png';
 import { Work } from '../typings';
 import axios from '../axios';
 import { AxiosError, AxiosResponse } from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
+import * as api from '../api';
 
 interface Props {
   workId?: string;
@@ -22,6 +24,8 @@ const initialData = {
 };
 
 const WorkForm = ({ workId, setWorkId }: Props) => {
+  const { getAccessTokenSilently } = useAuth0();
+
   const queryClient = useQueryClient();
 
   const { mutate: createUpdateWork } = useMutation<
@@ -30,20 +34,13 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
     Work
   >(
     async (newWork) => {
-      const formData = new FormData();
-
-      formData.append('thumbnailFile', newWork.thumbnailFile);
-      formData.append('title', newWork.title);
-      formData.append('text', newWork.text);
-      formData.append('category', newWork.category);
-      formData.append('source', newWork.source);
-      formData.append('liveUrl', newWork.liveUrl);
+      const token = await getAccessTokenSilently();
 
       if (workId) {
-        return axios.put(`/works/${workId}`, formData);
+        return api.updateWork(workId, newWork, token);
+      } else {
+        return api.createWork(newWork, token);
       }
-
-      return axios.post('/works', formData);
     },
     {
       onSuccess: () => {
