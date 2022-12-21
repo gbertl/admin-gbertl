@@ -117,7 +117,9 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
           sx={{
             display: 'grid',
             gap: 5,
-            gridTemplateColumns: '40% 1fr',
+            gridTemplateColumns: {
+              md: '40% 1fr',
+            },
           }}
         >
           <Stack gap={2}>
@@ -165,7 +167,7 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
             />
             <Button
               variant="contained"
-              sx={{ mt: 5, width: 100 }}
+              sx={{ mt: 3, width: { xs: '100%', sm: 100 } }}
               type="submit"
             >
               Submit
