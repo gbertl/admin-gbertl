@@ -1,7 +1,15 @@
-import { Box, Button, Container, Stack, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  Container,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useController, useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { red } from '@mui/material/colors';
 
 import placeholder from '../assets/images/placeholder.png';
 import { Work } from '../typings';
@@ -27,30 +35,6 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
   const { getAccessTokenSilently } = useAuth0();
 
   const queryClient = useQueryClient();
-
-  const { mutate: createUpdateWork } = useMutation<
-    AxiosResponse,
-    AxiosError,
-    Work
-  >(
-    async (newWork) => {
-      const token = await getAccessTokenSilently();
-
-      if (workId) {
-        return api.updateWork(workId, newWork, token);
-      } else {
-        return api.createWork(newWork, token);
-      }
-    },
-    {
-      onSuccess: () => {
-        setThumbnailFilePreview(placeholder);
-        reset(initialData);
-        setWorkId('');
-        queryClient.invalidateQueries('works');
-      },
-    }
-  );
 
   const { data: work, refetch: refetchWork } = useQuery<
     AxiosResponse,
@@ -78,10 +62,46 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
     handleSubmit,
     control,
     reset,
-    formState: { defaultValues, touchedFields },
+    formState: { defaultValues, touchedFields, errors },
+    setError,
   } = useForm<Work>({
     defaultValues: initialData,
   });
+
+  const { mutate: createUpdateWork } = useMutation<
+    AxiosResponse,
+    AxiosError,
+    Work
+  >(
+    async (newWork) => {
+      const token = await getAccessTokenSilently();
+
+      if (workId) {
+        return api.updateWork(workId, newWork, token);
+      } else {
+        return api.createWork(newWork, token);
+      }
+    },
+    {
+      onSuccess: () => {
+        setThumbnailFilePreview(placeholder);
+        reset(initialData);
+        setWorkId('');
+        queryClient.invalidateQueries('works');
+      },
+      onError: (e) => {
+        for (const [key, value] of Object.entries(e.response?.data as Work)) {
+          setError(
+            key === 'thumbnail' ? 'thumbnailFile' : (key as keyof Work),
+            {
+              type: 'custom',
+              message: value.message,
+            }
+          );
+        }
+      },
+    }
+  );
 
   const { field: thumbnailFileField } = useController({
     name: 'thumbnailFile',
@@ -129,6 +149,8 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
               InputLabelProps={{
                 shrink: !!defaultValues?.title || touchedFields.title,
               }}
+              error={!!errors.title}
+              helperText={errors.title?.message}
               {...register('title')}
             />
             <TextField
@@ -139,6 +161,8 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
               InputLabelProps={{
                 shrink: !!defaultValues?.text || touchedFields.text,
               }}
+              error={!!errors.text}
+              helperText={errors.text?.message}
               {...register('text')}
             />
             <TextField
@@ -147,6 +171,8 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
               InputLabelProps={{
                 shrink: !!defaultValues?.category || touchedFields.category,
               }}
+              error={!!errors.category}
+              helperText={errors.category?.message}
               {...register('category')}
             />
             <TextField
@@ -155,6 +181,8 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
               InputLabelProps={{
                 shrink: !!defaultValues?.source || touchedFields.source,
               }}
+              error={!!errors.source}
+              helperText={errors.source?.message}
               {...register('source')}
             />
             <TextField
@@ -163,6 +191,8 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
               InputLabelProps={{
                 shrink: !!defaultValues?.liveUrl || touchedFields.liveUrl,
               }}
+              error={!!errors.liveUrl}
+              helperText={errors.liveUrl?.message}
               {...register('liveUrl')}
             />
             <Button
@@ -185,10 +215,23 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
             <Box
               component="label"
               htmlFor="thumbnailFile"
-              sx={{ cursor: 'pointer' }}
+              sx={{
+                cursor: 'pointer',
+                display: 'block',
+                border: errors.thumbnailFile ? `2px solid ${red[700]}` : '',
+              }}
             >
-              <img src={thumbnailFilePreview} alt="" />
+              <img
+                src={thumbnailFilePreview}
+                alt=""
+                style={{ display: 'block' }}
+              />
             </Box>
+            {errors.thumbnailFile && (
+              <Typography variant="body2" sx={{ mt: 1, color: red[700] }}>
+                {errors.thumbnailFile.message}
+              </Typography>
+            )}
           </Box>
         </Box>
       </form>
