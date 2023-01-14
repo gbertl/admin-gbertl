@@ -31,7 +31,7 @@ const WorksTable = ({ setWorkId }: Props) => {
   const { data: works } = useQuery<AxiosResponse, AxiosError, Work[]>(
     'works',
     async () => {
-      const { data } = await axios.get('/works');
+      const { data } = await axios.get('/works?sort[priorityOrder]=1');
       return data;
     }
   );
