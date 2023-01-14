@@ -158,7 +158,7 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
               variant="filled"
               label="Text"
               multiline
-              rows={2}
+              minRows={4}
               InputLabelProps={{
                 shrink: !!defaultValues?.text || touchedFields.text,
               }}
