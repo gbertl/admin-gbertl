@@ -7,4 +7,5 @@ export interface Work {
   category: string;
   source: string;
   liveUrl: string;
+  priorityOrder: number;
 }

@@ -29,6 +29,7 @@ const initialData = {
   category: '',
   source: '',
   liveUrl: '',
+  priorityOrder: 0,
 };
 
 const WorkForm = ({ workId, setWorkId }: Props) => {
@@ -194,6 +195,18 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
               error={!!errors.liveUrl}
               helperText={errors.liveUrl?.message}
               {...register('liveUrl')}
+            />
+            <TextField
+              variant="filled"
+              label="Priority order"
+              InputLabelProps={{
+                shrink:
+                  !!defaultValues?.priorityOrder || touchedFields.priorityOrder,
+              }}
+              type="number"
+              error={!!errors.priorityOrder}
+              helperText={errors.priorityOrder?.message}
+              {...register('priorityOrder')}
             />
             <Button
               variant="contained"
