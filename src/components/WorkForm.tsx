@@ -69,7 +69,7 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
     defaultValues: initialData,
   });
 
-  const { mutate: createUpdateWork } = useMutation<
+  const { mutate: createUpdateWork, isLoading } = useMutation<
     AxiosResponse,
     AxiosError,
     Work
@@ -212,6 +212,7 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
               variant="contained"
               sx={{ mt: 3, width: { xs: '100%', sm: 100 } }}
               type="submit"
+              disabled={isLoading}
             >
               Submit
             </Button>{' '}
