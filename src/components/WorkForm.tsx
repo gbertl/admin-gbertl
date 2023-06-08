@@ -2,6 +2,10 @@ import {
   Box,
   Button,
   Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   TextField,
   Typography,
@@ -12,7 +16,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { red } from '@mui/material/colors';
 
 import placeholder from '../assets/images/placeholder.png';
-import { Work } from '../typings';
+import { Work, Types } from '../typings.d';
 import axios from '../axios';
 import { AxiosError, AxiosResponse } from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -29,6 +33,7 @@ const initialData = {
   category: '',
   source: '',
   liveUrl: '',
+  type: Types.Featured,
   priorityOrder: 0,
 };
 
@@ -68,6 +73,8 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
   } = useForm<Work>({
     defaultValues: initialData,
   });
+
+  const { field: typeField } = useController({ name: 'type', control });
 
   const { mutate: createUpdateWork, isLoading } = useMutation<
     AxiosResponse,
@@ -196,6 +203,14 @@ const WorkForm = ({ workId, setWorkId }: Props) => {
               helperText={errors.liveUrl?.message}
               {...register('liveUrl')}
             />
+            <FormControl variant="filled">
+              <InputLabel id="work-type">Type</InputLabel>
+              <Select labelId="work-type" label="Type" {...typeField}>
+                <MenuItem value={Types.Featured}>{Types.Featured}</MenuItem>
+                <MenuItem value={Types.Upwork}>{Types.Upwork}</MenuItem>
+                <MenuItem value={Types.Personal}>{Types.Personal}</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               variant="filled"
               label="Priority order"

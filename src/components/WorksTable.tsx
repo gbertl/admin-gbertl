@@ -93,6 +93,7 @@ const WorksTable = ({ setWorkId }: Props) => {
                 <TableCell>Category</TableCell>
                 <TableCell>Github url</TableCell>
                 <TableCell>Live url</TableCell>
+                <TableCell>Type</TableCell>
                 <TableCell>Priority order</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
@@ -112,6 +113,7 @@ const WorksTable = ({ setWorkId }: Props) => {
                   <TableCell>
                     <Link href={work.liveUrl}>{work.liveUrl}</Link>
                   </TableCell>
+                  <TableCell>{work.type}</TableCell>
                   <TableCell>{work.priorityOrder}</TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 2 }}>

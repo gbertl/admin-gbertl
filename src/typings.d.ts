@@ -1,3 +1,9 @@
+export enum Types {
+  Featured = 'featured',
+  Upwork = 'upwork',
+  Personal = 'personal',
+}
+
 export interface Work {
   _id: string;
   thumbnailFile: File;
@@ -7,5 +13,6 @@ export interface Work {
   category: string;
   source: string;
   liveUrl: string;
+  type: Types;
   priorityOrder: number;
 }
